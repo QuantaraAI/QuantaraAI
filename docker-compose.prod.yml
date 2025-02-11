@@ -1,0 +1,73 @@
+version: "3.8"
+services:
+  QuantaraAI_backend:
+    image: ghcr.io/project-QuantaraAI/QuantaraAI-core_backend:main
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-region: "eu-central-1"
+        awslogs-group: "/aws/QuantaraAI/backend"
+        tag: "{{.ID}}"
+    restart: always
+    ports:
+      - "80:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://user:pass@db:5432/app?schema=api_schema
+      - UPDATE_EMBEDDINGS_ON_BOOTSTRAP=1
+      - ENABLE_UPDATE_EMBEDDINGS_CRON=1
+      - NO_COLOR=1
+    env_file:
+      - ./apps/QuantaraAI_backend/.env
+
+  QuantaraAI_core:
+    image: ghcr.io/project-QuantaraAI/QuantaraAI-core_core:main
+    restart: always
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-region: "eu-central-1"
+        awslogs-group: "/aws/QuantaraAI/core"
+        tag: "{{.ID}}"
+    env_file:
+      - ./apps/QuantaraAI_core/.env
+    command: python -u -m apps.QuantaraAI_core.main
+
+  QuantaraAI_scheduler:
+    image: ghcr.io/project-QuantaraAI/QuantaraAI-core_scheduler:main
+    restart: always
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-region: "eu-central-1"
+        awslogs-group: "/aws/QuantaraAI/scheduler"
+        tag: "{{.ID}}"
+    env_file:
+      - ./apps/QuantaraAI_scheduler/.env
+    command: python -u -m apps.QuantaraAI_scheduler.main
+
+  db:
+    image: postgres:16
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
