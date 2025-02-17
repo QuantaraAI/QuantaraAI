@@ -5,7 +5,7 @@ description = "QuantaraAI - The Celestial Dance of Intelligence"
 authors = []
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/QuantaraAI/QuantaraAI"
+repository = "https://github.com/QuantaraAI/QuantaraAI/tree/main"
 
 packages = [
     { include = "apps"},
