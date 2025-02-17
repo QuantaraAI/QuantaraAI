@@ -1,5 +1,5 @@
-from QuantaraAIai_core.graph.base import generate_response
-from QuantaraAIai_core.plugins.registry import ensure_plugin_registry
+from QuantaraAI_core.graph.base import generate_response
+from QuantaraAI_core.plugins.registry import ensure_plugin_registry
 from apps.QuantaraAI_brain import _preload_modules
 from settings import settings
 

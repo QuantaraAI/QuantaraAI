@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = "./apps/QuantaraAI_core/.env"
         env_file_encoding = "utf-8"
-        extra = "ignore"
+        
 
 
 settings = Settings()
