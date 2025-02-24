@@ -46,7 +46,7 @@ resource "aws_eip" "eip" {
 
 resource "aws_ebs_volume" "QuantaraAI-volume" {
   availability_zone = aws_instance.QuantaraAI-instance.availability_zone
-  size              = 40
+  size              = 50
 
   tags = {
     Name = "QuantaraAI-Volume"
